@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title></title>
+        <style>
+            body{
+                background: white;
+            }
+            .ToolBar{
+                float: left;
+                font-family: "微软雅黑";
+                font-size: 14px;
+                font-variant: small-caps;
+                text-align: center;
+                background: #F2F7EE;
+                padding: 10px 15px 3px 10px;
+                margin-bottom: 1px;
+                margin-right: 1px;
+                border: 1px solid #7B899B;
+            }
+            .ToolBar button{
+                padding: 6px;
+                margin: 7px 2px;
+                font-variant: normal;
+                font-size: 12px;
+            }
+            canvas{
+                border: 1px solid #7B899B;
+            }
+            img{
+                padding: 2px;
+                border: 2px solid #F2F7EE;
+            }
+            img:hover{/*当鼠标悬停在图片上*/
+                border: 2px groove #E4F0FE;
+                background: white;
+            }
+            img.Selected{
+                border: 2px groove #E4F0FE;
+            }
+            #saveCopyContainer{
+                display: none;
+            }
+            #saveCopyContainer img{
+                width: 250px;
+                height: 150px;
+            }
+            .CanvasContainer{                
+            }
+        </style>
+        <script type="text/javascript">
+            var canvas;
+            var context;
+            var isDrawing=false;
+            window.onload=function(){
+                canvas = document.getElementById("drawingCanvas");
+                context = canvas.getContext("2d");
+                canvas.onmousedown = startDrawing;
+                canvas.onmouseup = stopDrawing;
+                canvas.onmouseout = stopDrawing;
+                canvas.onmousemove = draw;
+            }
+            function startDrawing(e)
+            {
+                isDrawing = true;
+                context.beginPath();
+                context.moveTo(e.pageX-canvas.offsetLeft,e.pageY-canvas.offsetTop);
+            }
+            function stopDrawing()
+            {
+                isDrawing=false;
+            }
+            function draw(e)
+            {
+                if(isDrawing)
+                {
+                    var x = e.pageX-canvas.offsetLeft;
+                    var y = e.pageY-canvas.offsetTop;
+                    context.lineTo(x,y);
+                    context.stroke();
+                }
+            }
+            function changeColor(color,imgEle)
+            {
+                context.strokeStyle = color;
+                imgEle.className = "Selected";
+            }
+            function changethickness(thickness,imgEle)
+            {
+                context.lineWidth = thickness;
+                imgEle.className = "Selected";
+            }
+            function clearCanvas(){
+                context.clearRect(0,0,canvas.width,canvas.height)
+            }
+            function saveCanvas(){
+                var imageCopy = document.getElementById("saveImageCopy");
+                imageCopy.src = canvas.toDataURL();
+                var imageContainer = document.getElementById("saveCopyContainer");
+                imageContainer.style.display = "block";                
+            }
+        </script>
+    </head>
+    <body>
+        <div class="Toolbar">
+            <img id="redPen" src="images/pen_red.gif" alt="Red Pen"
+                onclick="changeColor('rgb(212,21,29)',this)"/>
+            <img id="greenPen" src="images/pen_green.gif" alt="Green Pen"
+                onclick="changeColor('rgb(131,190,61)',this)"/>
+            <img id="bluePen" src="images/pen_blue.gif" alt="Blue Pen"
+                onclick="changeColor('rgb(0,86,166)',this)"/>
+        </div>
+        <div class="Toolbar">
+            <img src="images/pen_thin.gif" alt="Thin Pen"
+                onclick="changethickness(1,this)"/>
+            <img src="images/pen_medium.gif" alt="Medium Pen"
+                onclick="changethickness(5,this)"/>
+            <img src="images/pen_thick.gif" alt="Thick Pen"
+            onclick="changethickness(10,this)"/>
+        </div>
+        <div>
+            <canvas id="drawingCanvas" width="500" height="500"></canvas>
+        </div>
+        <div>
+            <button onclick="saveCanvas()">Save</button>
+            <button onclick="clearCanvas()">Clean</button>
+            <div id="saveCopyContainer">
+                <img id="saveImageCopy"/><br/>                
+            </div>
+        </div>
+    </body>
+</html>
